@@ -2,13 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Device;
+use App\Models\Device_EventType;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use App\Models\Events;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class EventsController extends Controller
 {
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function showAll(): mixed
     {
         try{
@@ -31,8 +42,7 @@ class EventsController extends Controller
     }
 
     public function create(Request $request): mixed
-    {            return response()->json('$event', 201);
-
+    {
         try {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
@@ -59,6 +69,32 @@ class EventsController extends Controller
                 'time',
                 'type_event_id',
             ]));
+
+            //Consulta para pegar todos os notification_token de todos os devices cujo o type_event_id seja o mesmo
+            // do event_type_id do device_event_types
+            $devices = Device_EventType::where('event_type_id', $request['type_event_id'])->get();
+
+            $deviceIds = $devices->pluck('device_id');  // Pega todos os device_ids da coleção
+
+            $notificationTokens = Device::whereIn('id', $deviceIds)->pluck('notification_token');
+
+            $titleNofitication = 'Atenção!';
+            $messageNotification = 'O evento'.$request['title'].'está próximo';
+            $playersId = $notificationTokens->toArray();
+            $array=[];
+
+            $startDate = Carbon::parse($request['start_date']);
+            $dateToSend = 1;
+            $adjustedDate = Carbon::today()->addDays($dateToSend);
+            $diffInDays = $startDate->diffInDays($adjustedDate);
+
+            $this->notificationService->sendPushNotificationInTime(
+                $titleNofitication,
+                $messageNotification,
+                $playersId,
+                $array,
+                $diffInDays
+            );
 
             return response()->json($event, 201);
         } catch (\Throwable $th) {
