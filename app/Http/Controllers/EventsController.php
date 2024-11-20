@@ -79,14 +79,14 @@ class EventsController extends Controller
             $notificationTokens = Device::whereIn('id', $deviceIds)->pluck('notification_token');
 
             $titleNofitication = 'Atenção!';
-            $messageNotification = 'O evento'.$request['title'].'está próximo';
+            $messageNotification = 'O evento '.$request['title'].' está próximo';
             $playersId = $notificationTokens->toArray();
             $array=[];
 
             $startDate = Carbon::parse($request['start_date']);
-            $dateToSend = 1;
+            $dateToSend = 1; // 1 dia antes do evento
             $adjustedDate = Carbon::today()->addDays($dateToSend);
-            $diffInDays = $startDate->diffInDays($adjustedDate);
+            $diffInDays = $adjustedDate->diffInDays($startDate);
 
             $this->notificationService->sendPushNotificationInTime(
                 $titleNofitication,

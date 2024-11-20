@@ -15,7 +15,7 @@ class OneSignalProvider implements PushNotificationInterface
     private string $appKeyToken;
     private string $userKeyToken;
     private string $appId;
-    private $apiInstance;
+    private DefaultApi $apiInstance;
 
     public function __construct()
     {
@@ -37,7 +37,7 @@ class OneSignalProvider implements PushNotificationInterface
         $this->apiInstance = new DefaultApi(new GuzzleHttp\Client($clientOptions), $config);
     }
 
-    private function createNotification(string $title, string $message): Notification
+    private function createNotification(string $title, string $message, array $playersId): Notification
     {
         $content = new StringMap();
         $content->setEn($message); // Mensagem da notificação
@@ -45,7 +45,7 @@ class OneSignalProvider implements PushNotificationInterface
         $notification = new Notification();
         $notification->setAppId($this->appId);
         $notification->setContents($content);
-        $notification->setIncludedSegments(['Subscribed Users']);
+        $notification->setIncludePlayerIds($playersId);
         $notification->setHeadings(['en' => $title]); // Título da notificação
 
         return $notification;
@@ -60,14 +60,13 @@ class OneSignalProvider implements PushNotificationInterface
 
     public function sendPushNotificationInTime(string $title, string $message, array $playersId, array $data = [], string $dateToSend)
     {
-        // Calcula a data e hora para o envio
+        print_r("sendPushNotificationInTime  " . $dateToSend . "\n\n\n");
         $dt = new DateTime();
         $dt->modify('+' . $dateToSend . ' day'); // Usa o valor de $dateToSend para calcular o envio
 
-        $notification = $this->createNotification($title, $message);
-        $notification->setSendAfter($dt); // Define o envio programado
+        $notification = $this->createNotification($title, $message, $playersId);
+        $notification->setSendAfter($dt);
 
-        // Envia a notificação
         $scheduledNotification = $this->apiInstance->createNotification($notification);
         print_r($scheduledNotification);
     }

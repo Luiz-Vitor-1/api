@@ -21,7 +21,7 @@ class NotificationService
 
     public function sendPushNotificationInTime(string $title, string $message, array $playersId, array $data = [], string $dateToSend)
     {
-        $this->pushNotificationProvider->sendPushNotificationInTime($title,  $message, $playersId, $data = [], $dateToSend);
+        $this->pushNotificationProvider->sendPushNotificationInTime($title,  $message, $playersId, $data, $dateToSend);
     }
 
     public function sendPushNotificationToSegment(string $title, string $message, array $data = [])
