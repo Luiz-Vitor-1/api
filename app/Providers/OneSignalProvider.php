@@ -47,7 +47,7 @@ class OneSignalProvider implements PushNotificationInterface
         $notification->setContents($content);
         $notification->setIncludePlayerIds($playersId);
         $notification->setHeadings(['en' => $title]); // Título da notificação
-
+ 
         return $notification;
     }
 
