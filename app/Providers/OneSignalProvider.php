@@ -37,7 +37,7 @@ class OneSignalProvider implements PushNotificationInterface
         $this->apiInstance = new DefaultApi(new GuzzleHttp\Client($clientOptions), $config);
     }
 
-    private function createNotification(string $title, string $message, array $playersId): Notification
+    private function createNotification(string $title, string $message, array $playersId = []): Notification
     {
         $content = new StringMap();
         $content->setEn($message); // Mensagem da notificação
@@ -47,7 +47,7 @@ class OneSignalProvider implements PushNotificationInterface
         $notification->setContents($content);
         $notification->setIncludePlayerIds($playersId);
         $notification->setHeadings(['en' => $title]); // Título da notificação
- 
+
         return $notification;
     }
 
@@ -60,7 +60,6 @@ class OneSignalProvider implements PushNotificationInterface
 
     public function sendPushNotificationInTime(string $title, string $message, array $playersId, array $data = [], string $dateToSend)
     {
-        print_r("sendPushNotificationInTime  " . $dateToSend . "\n\n\n");
         $dt = new DateTime();
         $dt->modify('+' . $dateToSend . ' day'); // Usa o valor de $dateToSend para calcular o envio
 
