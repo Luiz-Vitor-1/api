@@ -165,4 +165,23 @@ class DeviceController extends Controller
             return response()->json(['message'=> $th->getMessage(),'errors'=> $th->getMessage()],500);
         }
     }
+
+    public function notifyAllDevices(Request $request): mixed
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Invalid input'], 400);
+        }
+
+        $name = $request->input('name');
+
+        EventType::create([
+            'name' => $name,
+        ]);
+
+        return response()->json(['message' => 'Event type created'], 201);
+    }
 }
