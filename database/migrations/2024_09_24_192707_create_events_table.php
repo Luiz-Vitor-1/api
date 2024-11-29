@@ -12,16 +12,16 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('subtitle');
-            $table->date('start_date'); 
-            $table->date('end_date'); 
-            $table->time('time'); 
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->time('time');
             $table->text('description')->nullable();
-            $table->string('location')->nullable(); 
+            $table->string('location')->nullable();
             $table->foreignId('type_event_id')->constrained('event_types')->onDelete('cascade'); // Chave estrangeira
             $table->timestamps();
         });
     }
- 
+
     public function down(): void
     {
         Schema::dropIfExists('events');

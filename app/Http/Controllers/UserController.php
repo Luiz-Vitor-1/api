@@ -77,4 +77,38 @@ class UserController extends Controller
 
         return response()->json(['message' => 'User created'], 201);
     }
+
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'email' => 'email',
+            'password' => 'min:6',
+            'name' => 'string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Invalid input'], 400);
+        }
+
+        $user = User::where('id', $request['id'])->first();
+
+        if ($user) {
+            if (isset($request['email'])) {
+                $user->email = $request['email'];
+            }
+
+            if (isset($request['name'])) {
+                $user->name = $request['name'];
+            }
+
+            if (isset($request['password'])) {
+                $user->password = bcrypt($request['password']);
+            }
+
+            $user->save();
+        }
+
+        return response()->json(['message' => 'User updated'], 201);
+    }
 }

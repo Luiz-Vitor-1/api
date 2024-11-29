@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/typeEvent', [EventTypeController::class, 'create']);
     Route::post('/notify/allDevices', [DeviceController::class, 'notifyAllDevices']);
+    Route::patch('/user', [UserController::class, 'update']);
 });
 
 // Public user routes
