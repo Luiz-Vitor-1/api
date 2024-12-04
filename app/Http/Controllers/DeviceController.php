@@ -5,12 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Device;
 use App\Models\Device_EventType;
 use App\Models\EventType;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class DeviceController extends Controller
 {
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     public function show(): mixed
     {
         try{
@@ -169,19 +176,22 @@ class DeviceController extends Controller
     public function notifyAllDevices(Request $request): mixed
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['message' => 'Invalid input'], 400);
         }
 
-        $name = $request->input('name');
+        $titleNotification = $request->input('title');
+        $messageNotification = $request->input('content');
 
-        EventType::create([
-            'name' => $name,
-        ]);
+        $this->notificationService->sendPushNotificationForAll(
+            $titleNotification,
+            $messageNotification
+        );
 
-        return response()->json(['message' => 'Event type created'], 201);
+        return response()->json(['message' => 'Notification send for all'], 201);
     }
 }

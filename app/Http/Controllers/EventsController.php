@@ -77,25 +77,25 @@ class EventsController extends Controller
             $deviceIds = $devices->pluck('device_id');  // Pega todos os device_ids da coleção
 
             $notificationTokens = Device::whereIn('id', $deviceIds)->pluck('notification_token');
+            if(empty($notificationTokens)){
+                $titleNofitication = 'Atenção!';
+                $messageNotification = 'O evento '.$request['title'].' está próximo';
+                $playersId = $notificationTokens->toArray();
+                $array=[];
 
-            $titleNofitication = 'Atenção!';
-            $messageNotification = 'O evento '.$request['title'].' está próximo';
-            $playersId = $notificationTokens->toArray();
-            $array=[];
+                $startDate = Carbon::parse($request['start_date']);
+                $dateToSend = 1; // 1 dia antes do evento
+                $adjustedDate = Carbon::today()->addDays($dateToSend);
+                $diffInDays = $adjustedDate->diffInDays($startDate);
 
-            $startDate = Carbon::parse($request['start_date']);
-            $dateToSend = 1; // 1 dia antes do evento
-            $adjustedDate = Carbon::today()->addDays($dateToSend);
-            $diffInDays = $adjustedDate->diffInDays($startDate);
-
-            $this->notificationService->sendPushNotificationInTime(
-                $titleNofitication,
-                $messageNotification,
-                $playersId,
-                $array,
-                $diffInDays
-            );
-
+                $this->notificationService->sendPushNotificationInTime(
+                    $titleNofitication,
+                    $messageNotification,
+                    $playersId,
+                    $array,
+                    $diffInDays
+                );
+            }
             return response()->json($event, 201);
         } catch (\Throwable $th) {
             return response()->json(['message'=> $th->getMessage(),'errors'=> $th->getMessage()],500);

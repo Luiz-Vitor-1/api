@@ -18,6 +18,7 @@ class EventTypeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'image' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -25,9 +26,11 @@ class EventTypeController extends Controller
         }
 
         $name = $request->input('name');
+        $image = $request->input('name');
 
         EventType::create([
             'name' => $name,
+            'image' => $image
         ]);
 
         return response()->json(['message' => 'Event type created'], 201);
