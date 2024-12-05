@@ -54,6 +54,7 @@ class OneSignalProvider implements PushNotificationInterface
     public function sendPushNotificationForAll(string $title, string $message, array $data = [])
     {
         $notification = $this->createNotification($title, $message);
+        $notification->setIncludedSegments(["All"]);
         $result = $this->apiInstance->createNotification($notification);
         print_r($result);
     }
