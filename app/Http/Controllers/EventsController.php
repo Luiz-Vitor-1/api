@@ -59,8 +59,8 @@ class EventsController extends Controller
                 return response()->json(['message' => 'Invalid input', 'errors' => $validator->errors()], 400);
             }
 
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
+            $startDate = Carbon::parse($request->input('start_date'))->addDay();
+            $endDate = Carbon::parse($request->input('end_date'))->addDay();
 
             $event = Events::create([
                 'title' => $request->input('title'),
