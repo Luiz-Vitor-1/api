@@ -59,16 +59,19 @@ class EventsController extends Controller
                 return response()->json(['message' => 'Invalid input', 'errors' => $validator->errors()], 400);
             }
 
-            $event = Events::create($request->only([
-                'title',
-                'subtitle',
-                'description',
-                'start_date',
-                'end_date',
-                'location',
-                'time',
-                'type_event_id',
-            ]));
+            $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
+            $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
+
+            $event = Events::create([
+                'title' => $request->input('title'),
+                'subtitle' => $request->input('subtitle'),
+                'description' => $request->input('description'),
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'location' => $request->input('location'),
+                'time' => $request->input('time'),
+                'type_event_id' => $request->input('type_event_id'),
+            ]);
 
             //Consulta para pegar todos os notification_token de todos os devices cujo o type_event_id seja o mesmo
             // do event_type_id do device_event_types
